@@ -107,7 +107,8 @@ defmodule Mix.Tasks.CoherenceAssent.Install do
   defp update_coherence_files(config), do: config
 
   defp update_user_model(config) do
-    user_path = lib_path("coherence/user.ex")
+    # user_path = lib_path("coherence/user.ex")
+    user_path = lib_path("account/user.ex")
     case File.lstat(user_path) do
       {:ok, %{type: :regular}} -> update_user_model_file(user_path)
                                   config
