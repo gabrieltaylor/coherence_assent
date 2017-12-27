@@ -1,6 +1,6 @@
 defmodule CoherenceAssent.RegistrationController do
   @moduledoc false
-  use Coherence.Web, :controller
+  use CoherenceWeb, :controller
 
   alias CoherenceAssent.Callback
   import Plug.Conn, only: [get_session: 2, delete_session: 2]

@@ -1,6 +1,6 @@
 defmodule CoherenceAssent.Controller do
   @moduledoc false
-  use Coherence.Web, :controller
+  use CoherenceWeb, :controller
 
   import Plug.Conn, only: [put_session: 3]
   import Phoenix.Naming, only: [humanize: 1]
