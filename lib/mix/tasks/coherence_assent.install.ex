@@ -371,7 +371,7 @@ defmodule Mix.Tasks.CoherenceAssent.Install do
       ]
     ]
 
-    Handlers exists for Facebook, Github, Google and Twitter.
+    Handlers exists for Facebook, Github, Google, Twitter and Basecamp.
     """
   end
 

@@ -6,17 +6,16 @@ defmodule CoherenceAssent.Strategy.Github do
   alias CoherenceAssent.Strategy.Helpers
   alias CoherenceAssent.Strategies.OAuth2, as: OAuth2Helper
 
-  def authorize_url(conn: conn, config: config) do
-    config = config |> set_config
-    OAuth2Helper.authorize_url(conn: conn, config: config)
+  def authorize_url(conn, config) do
+    OAuth2Helper.authorize_url(conn, set_config(config))
   end
 
-  def callback(conn: conn, config: config, params: params) do
-    config = config |> set_config
+  def callback(conn, config, params) do
+    config = set_config(config)
 
-    [conn: conn, config: config, params: params]
-    |> OAuth2Helper.callback()
-    |> get_email
+    conn
+    |> OAuth2Helper.callback(config, params)
+    |> get_email(config)
     |> normalize
   end
 
@@ -26,14 +25,15 @@ defmodule CoherenceAssent.Strategy.Github do
       authorize_url: "https://github.com/login/oauth/authorize",
       token_url: "https://github.com/login/oauth/access_token",
       user_url: "/user",
-      authorization_params: [scope: "user,user:email"]
+      user_emails_url: "/user/emails",
+      authorization_params: [scope: "read:user,user:email"]
     ]
     |> Keyword.merge(config)
     |> Keyword.put(:strategy, OAuth2.Strategy.AuthCode)
   end
 
-  defp get_email({:ok, %{conn: conn, client: client, user: user}}) do
-    case OAuth2.Client.get(client, "/user/emails") do
+  defp get_email({:ok, %{conn: conn, client: client, user: user}}, config) do
+    case OAuth2.Client.get(client, config[:user_emails_url]) do
       {:ok, %OAuth2.Response{body: emails}} ->
         user = Map.put(user, "email", get_primary_email(emails))
         {:ok, %{conn: conn, client: client, user: user}}
