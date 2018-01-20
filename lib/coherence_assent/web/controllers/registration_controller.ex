@@ -8,7 +8,7 @@ defmodule CoherenceAssent.RegistrationController do
 
   def add_login_field(conn, %{"provider" => _provider} = params) do
     user_schema = Config.user_schema
-    changeset = Coherence.ControllerHelpers.changeset(:registration, user_schema, user_schema.__struct__)
+    changeset = Coherence.Controller.changeset(:registration, user_schema, user_schema.__struct__)
 
     add_login_field(conn, params, changeset)
   end
