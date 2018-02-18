@@ -8,12 +8,12 @@ defmodule CoherenceAssent.Controller do
   def callback_response({:ok, :user_created, user}, conn, _provider, _user_params, params) do
     conn
     |> send_confirmation(user)
-    |> Coherence.Controller.login_user(user)
+    |> create_user_session(user)
     |> redirect_to(:registration_create, params)
   end
   def callback_response({:ok, _type, user}, conn, _provider, _user_params, params) do
     conn
-    |> Coherence.Controller.login_user(user)
+    |> create_user_session(user)
     |> redirect_to(:session_create, params)
   end
   def callback_response({:error, :bound_to_different_user}, conn, provider, _user_params, _params) do
@@ -46,9 +46,14 @@ defmodule CoherenceAssent.Controller do
   end
 
   defp send_confirmation(conn, user) do
-    case Coherence.Config.user_schema.confirmed?(user) do
-      false -> Coherence.Controller.send_confirmation(conn, user, Coherence.Config.user_schema)
-      _     -> conn
+    cond do
+      not Coherence.Config.user_schema.confirmable?() -> conn
+      not Coherence.Config.user_schema.confirmed?(user) -> Coherence.ControllerHelpers.send_confirmation(conn, user, Coherence.Config.user_schema)
+      true -> conn
     end
+  end
+
+  defp create_user_session(conn, user) do
+    Coherence.ControllerHelpers.login_user(conn, user)
   end
 end
